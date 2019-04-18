@@ -1,9 +1,12 @@
 package com.tc.tar;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Process;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,7 +24,9 @@ import org.rajawali3d.view.SurfaceView;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DSOActivity extends AppCompatActivity implements DSORenderer.RenderListener {
 
@@ -46,6 +51,7 @@ public class DSOActivity extends AppCompatActivity implements DSORenderer.Render
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        permissions();
         init();
 
         mRajawaliSurface = createSurfaceView();
@@ -76,6 +82,23 @@ public class DSOActivity extends AppCompatActivity implements DSORenderer.Render
         }
 
         setContentView(mLayout);
+    }
+
+    private void permissions() {
+        String[] allPermissionsNeeded = {
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        };
+
+        List<String> permissionNeeded = new ArrayList<>();
+
+        for (String permission : allPermissionsNeeded)
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED)
+                permissionNeeded.add(permission);
+            if (permissionNeeded.size() > 0) {
+                requestPermissions(permissionNeeded.toArray(new String[0]), 0);
+            }
     }
 
     private void init() {
